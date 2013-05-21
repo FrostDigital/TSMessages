@@ -9,7 +9,7 @@
 #import "TSMessageView.h"
 #import "UIColor+MLColorAdditions.h"
 
-#define TSMessageViewPadding 15.0
+#define TSMessageViewPadding 12.0
 
 #define TSDesignFileName @"design.json"
 
@@ -127,17 +127,17 @@ static NSDictionary *notificationDesign;
         if (image) self.textSpaceLeft += image.size.width + 2 * TSMessageViewPadding;
         
         // Set up title label
-        _titleLabel = [[UILabel alloc] init];
-        [self.titleLabel setText:title];
-        [self.titleLabel setTextColor:fontColor];
-        [self.titleLabel setBackgroundColor:[UIColor clearColor]];
-        [self.titleLabel setFont:[UIFont boldSystemFontOfSize:[[current valueForKey:@"titleFontSize"] floatValue]]];
-        [self.titleLabel setShadowColor:[UIColor colorWithHexString:[current valueForKey:@"shadowColor"] alpha:1.0]];
-        [self.titleLabel setShadowOffset:CGSizeMake([[current valueForKey:@"shadowOffsetX"] floatValue],
-                                                    [[current valueForKey:@"shadowOffsetY"] floatValue])];
-        self.titleLabel.numberOfLines = 0;
-        self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        [self addSubview:self.titleLabel];
+//        _titleLabel = [[UILabel alloc] init];
+//        [self.titleLabel setText:title];
+//        [self.titleLabel setTextColor:fontColor];
+//        [self.titleLabel setBackgroundColor:[UIColor clearColor]];
+//        [self.titleLabel setFont:[UIFont boldSystemFontOfSize:[[current valueForKey:@"titleFontSize"] floatValue]]];
+//        [self.titleLabel setShadowColor:[UIColor colorWithHexString:[current valueForKey:@"shadowColor"] alpha:1.0]];
+//        [self.titleLabel setShadowOffset:CGSizeMake([[current valueForKey:@"shadowOffsetX"] floatValue],
+//                                                    [[current valueForKey:@"shadowOffsetY"] floatValue])];
+//        self.titleLabel.numberOfLines = 0;
+//        self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+//        [self addSubview:self.titleLabel];
         
         // Set up content label (if set)
         if ([content length])
@@ -272,7 +272,7 @@ static NSDictionary *notificationDesign;
     if ([self.content length])
     {
         self.contentLabel.frame = CGRectMake(self.textSpaceLeft,
-                                             self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + 5.0,
+                                             self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + 10.0,
                                              screenWidth - TSMessageViewPadding - self.textSpaceLeft - self.textSpaceRight,
                                              0.0);
         [self.contentLabel sizeToFit];

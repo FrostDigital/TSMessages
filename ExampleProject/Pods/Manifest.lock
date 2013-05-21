@@ -1,5 +1,5 @@
 PODS:
-  - TSMessages (0.9.1)
+  - TSMessages (0.9.2)
 
 DEPENDENCIES:
   - TSMessages (from `..`)
@@ -9,6 +9,6 @@ EXTERNAL SOURCES:
     :local: ..
 
 SPEC CHECKSUMS:
-  TSMessages: d72ae40ebb8f54c738d72804f38cecafe5721dc3
+  TSMessages: 9169abb0e6962810b9aa8f731d7c481b05a73dec
 
-COCOAPODS: 0.18.1
+COCOAPODS: 0.19.1
