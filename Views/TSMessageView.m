@@ -9,7 +9,7 @@
 #import "TSMessageView.h"
 #import "UIColor+MLColorAdditions.h"
 
-#define TSMessageViewPadding 12.0
+#define TSMessageViewPadding 11.0
 
 #define TSDesignFileName @"design.json"
 
@@ -272,7 +272,7 @@ static NSDictionary *notificationDesign;
     if ([self.content length])
     {
         self.contentLabel.frame = CGRectMake(self.textSpaceLeft,
-                                             self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + 10.0,
+                                             self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + 12.0,
                                              screenWidth - TSMessageViewPadding - self.textSpaceLeft - self.textSpaceRight,
                                              0.0);
         [self.contentLabel sizeToFit];

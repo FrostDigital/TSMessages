@@ -67,7 +67,7 @@
         "imageName": "",
         "shadowColor": "#812929",
         "shadowOffsetX": 0,
-        "shadowOffsetY": -1,
+        "shadowOffsetY": 0,
         "textColor": "#FFFFFF",
         "titleFontSize": 14
     }
