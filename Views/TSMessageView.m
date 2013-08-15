@@ -7,15 +7,15 @@
 //
 
 #import "TSMessageView.h"
-#import "UIColor+MLColorAdditions.h"
+#import "HexColor.h"
 
 #define TSMessageViewPadding 12.0
 
 #define TSDesignFileName @"design.json"
 
-static NSDictionary *notificationDesign;
+static NSMutableDictionary *_notificationDesign;
 
-@interface TSMessageView ()
+@interface TSMessageView () <UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *content;
@@ -44,6 +44,29 @@ static NSDictionary *notificationDesign;
 
 @implementation TSMessageView
 
++ (NSMutableDictionary*)notificationDesign
+{
+    if (!_notificationDesign)
+    {
+        NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:TSDesignFileName];
+        _notificationDesign = [NSMutableDictionary dictionaryWithDictionary:[NSJSONSerialization JSONObjectWithData:[NSData dataWithContentsOfFile:path]
+                                                                                      options:kNilOptions
+                                                                                        error:nil]];
+    }
+    
+    return _notificationDesign;
+}
+
++ (void)addNotificationDesignFromFile:(NSString*)filename
+{
+    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:filename];
+    NSDictionary* design = [NSJSONSerialization JSONObjectWithData:[NSData dataWithContentsOfFile:path]
+                                                          options:kNilOptions
+                                                            error:nil];
+    
+    [[TSMessageView notificationDesign] addEntriesFromDictionary:design];
+}
+
 - (id)initWithTitle:(NSString *)title
         withContent:(NSString *)content
            withType:(TSMessageNotificationType)notificationType
@@ -53,14 +76,9 @@ static NSDictionary *notificationDesign;
     withButtonTitle:(NSString *)buttonTitle
  withButtonCallback:(void (^)())buttonCallback
          atPosition:(TSMessageNotificationPosition)position
+  shouldBeDismissed:(BOOL)dismissAble
 {
-    if (!notificationDesign)
-    {
-        NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:TSDesignFileName];
-        notificationDesign = [NSJSONSerialization JSONObjectWithData:[NSData dataWithContentsOfFile:path]
-                                                             options:kNilOptions
-                                                               error:nil];
-    }
+    NSDictionary* notificationDesign = [TSMessageView notificationDesign];
     
     if ((self = [self init]))
     {
@@ -138,6 +156,7 @@ static NSDictionary *notificationDesign;
 //        self.titleLabel.numberOfLines = 0;
 //        self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
 //        [self addSubview:self.titleLabel];
+
         
         // Set up content label (if set)
         if ([content length])
@@ -152,7 +171,13 @@ static NSDictionary *notificationDesign;
             }
             [self.contentLabel setTextColor:contentTextColor];
             [self.contentLabel setBackgroundColor:[UIColor clearColor]];
-            [self.contentLabel setFont:[UIFont systemFontOfSize:[[current valueForKey:@"contentFontSize"] floatValue]]];
+            CGFloat fontSize = [[current valueForKey:@"contentFontSize"] floatValue];
+            NSString *fontName = [current valueForKey:@"contentFontName"];
+            if (fontName != nil) {
+                [self.contentLabel setFont:[UIFont fontWithName:fontName size:fontSize]];
+            } else {
+                [self.contentLabel setFont:[UIFont systemFontOfSize:fontSize]];
+            }
             [self.contentLabel setShadowColor:self.titleLabel.shadowColor];
             [self.contentLabel setShadowOffset:self.titleLabel.shadowOffset];
             self.contentLabel.lineBreakMode = self.titleLabel.lineBreakMode;
@@ -236,22 +261,37 @@ static NSDictionary *notificationDesign;
         
         if (self.messagePosition == TSMessageNotificationPositionBottom)
         {
-            topPosition = self.viewController.view.frame.size.height;
+            topPosition = self.viewController.view.bounds.size.height;
         }
         
         self.frame = CGRectMake(0.0, topPosition, screenWidth, actualHeight);
-        self.autoresizingMask = (UIViewAutoresizingFlexibleWidth);
         
-        UISwipeGestureRecognizer *gestureRec = [[UISwipeGestureRecognizer alloc] initWithTarget:self
-                                                                                         action:@selector(fadeMeOut)];
-        [gestureRec setDirection:(self.messagePosition == TSMessageNotificationPositionTop ?
-                                  UISwipeGestureRecognizerDirectionUp :
-                                  UISwipeGestureRecognizerDirectionDown)];
-        [self addGestureRecognizer:gestureRec];
+        if (self.messagePosition == TSMessageNotificationPositionTop)
+        {
+            self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        }
+        else
+        {
+            self.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
+        }
         
-        UITapGestureRecognizer *tapRec = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                                 action:@selector(fadeMeOut)];
-        [self addGestureRecognizer:tapRec];
+        if (dismissAble)
+        {
+            UISwipeGestureRecognizer *gestureRec = [[UISwipeGestureRecognizer alloc] initWithTarget:self
+                                                                                             action:@selector(fadeMeOut)];
+            [gestureRec setDirection:(self.messagePosition == TSMessageNotificationPositionTop ?
+                                      UISwipeGestureRecognizerDirectionUp :
+                                      UISwipeGestureRecognizerDirectionDown)];
+            [self addGestureRecognizer:gestureRec];
+            
+            UITapGestureRecognizer *tapRec = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                     action:@selector(fadeMeOut)];
+            [self addGestureRecognizer:tapRec];
+
+            UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+            tapGesture.delegate = self;
+            [self addGestureRecognizer:tapGesture];
+        }
     }
     return self;
 }
@@ -344,20 +384,10 @@ static NSDictionary *notificationDesign;
 
 - (void)fadeMeOut
 {
-    // user tapped on the message
-    dispatch_async(dispatch_get_main_queue(), ^
-    {
-        if (self.callback)
-        {
-            self.callback();
-        }
-        
-        [[TSMessage sharedMessage] performSelector:@selector(fadeOutNotification:)
-                                        withObject:self];
-    });
+    [[TSMessage sharedMessage] performSelectorOnMainThread:@selector(fadeOutNotification:) withObject:self waitUntilDone:NO];
 }
 
-#pragma mark - UIButton target
+#pragma mark - Target/Action
 
 - (void)buttonTapped:(id) sender
 {
@@ -367,6 +397,24 @@ static NSDictionary *notificationDesign;
     }
     
     [self fadeMeOut];
+}
+
+- (void)handleTap:(UITapGestureRecognizer *)tapGesture {
+    if (tapGesture.state == UIGestureRecognizerStateRecognized) {
+        if (self.callback)
+        {
+            self.callback();
+        }
+
+        [self fadeMeOut];
+    }
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+    return ! ([touch.view isKindOfClass:[UIControl class]]);
 }
 
 @end
