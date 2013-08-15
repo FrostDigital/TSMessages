@@ -8,21 +8,49 @@
 
 #import <UIKit/UIKit.h>
 
-typedef enum {
+// NS_ENUM is now the preferred way to do typedefs. It gives the compiler and debugger more information, which helps everyone.
+// When using SDK 6 or later, NS_ENUM is defined by Apple, so this block does nothing.
+// For SDK 5 or earlier, this is the same definition block Apple uses.
+#ifndef NS_ENUM
+#if (__cplusplus && __cplusplus >= 201103L && (__has_extension(cxx_strong_enums) || __has_feature(objc_fixed_enum))) || (!__cplusplus && __has_feature(objc_fixed_enum))
+#define NS_ENUM(_type, _name) enum _name : _type _name; enum _name : _type
+#if (__cplusplus)
+#define NS_OPTIONS(_type, _name) _type _name; enum : _type
+#else
+#define NS_OPTIONS(_type, _name) enum _name : _type _name; enum _name : _type
+#endif
+#else
+#define NS_ENUM(_type, _name) _type _name; enum
+#define NS_OPTIONS(_type, _name) _type _name; enum
+#endif
+#endif
+
+@class TSMessageView;
+
+typedef NS_ENUM(NSInteger, TSMessageNotificationType) {
     TSMessageNotificationTypeMessage = 0,
     TSMessageNotificationTypeWarning,
     TSMessageNotificationTypeError,
     TSMessageNotificationTypeSuccess
-} TSMessageNotificationType;
-
-typedef enum {
+};
+typedef NS_ENUM(NSInteger, TSMessageNotificationPosition) {
     TSMessageNotificationPositionTop = 0,
     TSMessageNotificationPositionBottom
-} TSMessageNotificationPosition;
+};
+
+/** This enum can be passed to the duration parameter */
+typedef NS_ENUM(NSInteger,TSMessageNotificationDuration) {
+    TSMessageNotificationDurationAutomatic = 0,
+    TSMessageNotificationDurationEndless = -1 // The notification is displayed until the user dismissed it or it is dismissed by calling dismissActiveNotification
+};
+
 
 @interface TSMessage : NSObject
 
 + (instancetype)sharedMessage;
+
+/** Indicates whether a notification is currently active. */
++ (BOOL)isNotificationActive;
 
 /** Shows a notification message 
  @param message The title of the notification view
@@ -106,6 +134,7 @@ typedef enum {
  @param buttonTitle The title for button (optional)
  @param buttonCallback The block that should be executed, when the user tapped on the button
  @param position The position of the message on the screen
+ @param dismissingEnabled Should the message be dismissed when the user taps/swipes it
  */
 + (void)showNotificationInViewController:(UIViewController *)viewController
                                withTitle:(NSString *)title
@@ -115,7 +144,20 @@ typedef enum {
                             withCallback:(void (^)())callback
                          withButtonTitle:(NSString *)buttonTitle
                       withButtonCallback:(void (^)())buttonCallback
-                              atPosition:(TSMessageNotificationPosition)messagePosition;
+                              atPosition:(TSMessageNotificationPosition)messagePosition
+                     canBeDismisedByUser:(BOOL)dismissingEnabled;
+
+/** Shows a notification message view in a specific view controller
+ @param messageView The message view to show
+ */
++ (void)showNotification:(TSMessageView *)messageView;
+
+/** Fades out the currently displayed notification. If another notification is in the queue,
+ the next one will be displayed automatically 
+ @return YES if the currently displayed notification could be hidden. NO if no notification 
+ was currently displayed.
+ */
++ (BOOL)dismissActiveNotification;
 
 
 /** Shows a predefined error message, that is displayed, when this action requires an internet connection */
@@ -124,13 +166,10 @@ typedef enum {
 /** Shows a predefined error message, that is displayed, when this action requires location services */
 + (void)showLocationError;
 
+/** Use this method to set a default view controller to display the messages in */
++ (void)setDefaultViewController:(UIViewController *)defaultViewController;
 
-
-
-/** Implement this in subclass to set a default view controller */
+/** You can also override this in subclass instead of using setDefaultViewController */
 + (UIViewController *)defaultViewController;
-
-/** Can be implemented differently in subclass. Is used to define the top position from which the notification flies in from */
-+ (CGFloat)navigationbarBottomOfViewController:(UIViewController *)viewController;
 
 @end

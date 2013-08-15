@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TSMessageView.h"
 
-@interface TSSecondViewController : UIViewController
+@interface TSSecondViewController : UIViewController <TSMessageViewProtocol>
 
 @property (weak, nonatomic) IBOutlet UISwitch *descriptionToggle;
 @property (weak, nonatomic) IBOutlet UISwitch *longDurationToggle;
@@ -20,5 +21,7 @@
 - (IBAction)didTapMessage:(id)sender;
 - (IBAction)didTapSuccess:(id)sender;
 - (IBAction)didTapButtonidsender:(id)sender;
+- (IBAction)didTapDismissCurrentMessage:(id)sender;
+- (IBAction)didTapEndless:(id)sender;
 
 @end
