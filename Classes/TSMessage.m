@@ -208,7 +208,7 @@ __weak static UIViewController *_defaultViewController;
     
     TSMessageView *currentView = [self.messages objectAtIndex:0];
     
-    CGFloat verticalOffset = 44.0f;
+    CGFloat verticalOffset = 0.0f;
     
     if ([currentView.viewController isKindOfClass:[UINavigationController class]])
     {
@@ -216,15 +216,15 @@ __weak static UIViewController *_defaultViewController;
         {
             [currentView.viewController.view insertSubview:currentView
                                               belowSubview:[(UINavigationController *)currentView.viewController navigationBar]];
-            //verticalOffset = [(UINavigationController *)currentView.viewController navigationBar].bounds.size.height;
+            verticalOffset = [(UINavigationController *)currentView.viewController navigationBar].bounds.size.height;
             
             if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation]))
             {
-                //verticalOffset += [UIApplication sharedApplication].statusBarFrame.size.height;
+                verticalOffset += [UIApplication sharedApplication].statusBarFrame.size.height;
             }
             else
             {
-                //verticalOffset += [UIApplication sharedApplication].statusBarFrame.size.width;
+                verticalOffset += [UIApplication sharedApplication].statusBarFrame.size.width;
             }
         }
         else
