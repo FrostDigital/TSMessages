@@ -208,7 +208,7 @@ __weak static UIViewController *_defaultViewController;
     
     TSMessageView *currentView = [self.messages objectAtIndex:0];
     
-    CGFloat verticalOffset = 64.0f;
+    CGFloat verticalOffset = 44.0f;
     
     if ([currentView.viewController isKindOfClass:[UINavigationController class]])
     {
