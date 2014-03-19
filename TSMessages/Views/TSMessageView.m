@@ -185,17 +185,17 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
         
         
         // Set up title label
-//        _titleLabel = [[UILabel alloc] init];
-//        [self.titleLabel setText:title];
-//        [self.titleLabel setTextColor:fontColor];
-//        [self.titleLabel setBackgroundColor:[UIColor clearColor]];
-//        [self.titleLabel setFont:[UIFont boldSystemFontOfSize:[[current valueForKey:@"titleFontSize"] floatValue]]];
-//        [self.titleLabel setShadowColor:[UIColor colorWithHexString:[current valueForKey:@"shadowColor"] alpha:1.0]];
-//        [self.titleLabel setShadowOffset:CGSizeMake([[current valueForKey:@"shadowOffsetX"] floatValue],
-//                                                    [[current valueForKey:@"shadowOffsetY"] floatValue])];
-//        self.titleLabel.numberOfLines = 0;
-//        self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-//        [self addSubview:self.titleLabel];
+        _titleLabel = [[UILabel alloc] init];
+        [self.titleLabel setText:title];
+        [self.titleLabel setTextColor:fontColor];
+        [self.titleLabel setBackgroundColor:[UIColor clearColor]];
+        [self.titleLabel setFont:[UIFont boldSystemFontOfSize:[[current valueForKey:@"titleFontSize"] floatValue]]];
+        [self.titleLabel setShadowColor:[UIColor colorWithHexString:[current valueForKey:@"shadowColor"] alpha:1.0]];
+        [self.titleLabel setShadowOffset:CGSizeMake([[current valueForKey:@"shadowOffsetX"] floatValue],
+                                                    [[current valueForKey:@"shadowOffsetY"] floatValue])];
+        self.titleLabel.numberOfLines = 0;
+        self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        [self addSubview:self.titleLabel];
         
         // Set up content label (if set)
         if ([subtitle length])
