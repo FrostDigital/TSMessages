@@ -1,9 +1,6 @@
 PODS:
-<<<<<<< HEAD
-  - TSMessages (0.9.2)
-=======
-  - HexColors (2.0.0)
-  - TSMessages (0.9.3):
+  - HexColors (2.2.1)
+  - TSMessages (0.9.4):
     - HexColors
 >>>>>>> upstream/master
 
@@ -15,13 +12,7 @@ EXTERNAL SOURCES:
     :path: ..
 
 SPEC CHECKSUMS:
-<<<<<<< HEAD
-  TSMessages: 9169abb0e6962810b9aa8f731d7c481b05a73dec
+  HexColors: 3a68db077cd6572a8f7d4aa1add284dd2436a934
+  TSMessages: de3fecb312d44078128add86d4347307669d0af2
 
-COCOAPODS: 0.19.1
-=======
-  HexColors: 24cee4b04d7b2b0922b93a3acf7739a25ae227e7
-  TSMessages: debb1243751f0cd7429dc85ca2b0c8f9fba408ac
-
-COCOAPODS: 0.21.0
->>>>>>> upstream/master
+COCOAPODS: 0.29.0
