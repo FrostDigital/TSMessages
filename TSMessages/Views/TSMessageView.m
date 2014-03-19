@@ -148,6 +148,8 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
             image = [UIImage imageNamed:[current valueForKey:@"imageName"]];
         }
         
+        BOOL displayImageToTheRight = [current valueForKey:@"imageToTheRight"] && [[current valueForKey:@"imageToTheRight"] boolValue];
+        
         if (![TSMessage iOS7StyleEnabled])
         {
             self.alpha = 0.0;
@@ -172,7 +174,15 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
         
         
         self.textSpaceLeft = 2 * TSMessageViewPadding;
-        if (image) self.textSpaceLeft += image.size.width + 2 * TSMessageViewPadding;
+        self.textSpaceRight = 0;
+        if (image) {
+            if(displayImageToTheRight) {
+                self.textSpaceRight += image.size.width + 2 * TSMessageViewPadding;
+            } else {
+                self.textSpaceLeft += image.size.width + 2 * TSMessageViewPadding;
+            }
+        }
+        
         
         // Set up title label
 //        _titleLabel = [[UILabel alloc] init];
@@ -186,7 +196,6 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
 //        self.titleLabel.numberOfLines = 0;
 //        self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
 //        [self addSubview:self.titleLabel];
-
         
         // Set up content label (if set)
         if ([subtitle length])
@@ -219,7 +228,7 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
         if (image)
         {
             _iconImageView = [[UIImageView alloc] initWithImage:image];
-            self.iconImageView.frame = CGRectMake(TSMessageViewPadding * 2,
+            self.iconImageView.frame = CGRectMake(displayImageToTheRight ? screenWidth - self.textSpaceRight : TSMessageViewPadding * 2,
                                                   TSMessageViewPadding,
                                                   image.size.width,
                                                   image.size.height);
@@ -265,7 +274,7 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
             
             self.button.contentEdgeInsets = UIEdgeInsetsMake(0.0, 5.0, 0.0, 5.0);
             [self.button sizeToFit];
-            self.button.frame = CGRectMake(screenWidth - TSMessageViewPadding - self.button.frame.size.width,
+            self.button.frame = CGRectMake(screenWidth - TSMessageViewPadding - self.button.frame.size.width - self.textSpaceRight,
                                            0.0,
                                            self.button.frame.size.width,
                                            31.0);
@@ -276,7 +285,9 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
         }
         
         // Add a border on the bottom (or on the top, depending on the view's postion)
-        if (![TSMessage iOS7StyleEnabled])
+        //Show border anyway if this is forced from style
+        BOOL forceShowBorder = [current valueForKey:@"forceShowBorder"] && [[current valueForKey:@"forceShowBorder"] boolValue];
+        if (![TSMessage iOS7StyleEnabled] || forceShowBorder)
         {
             _borderView = [[UIView alloc] initWithFrame:CGRectMake(0.0,
                                                                    0.0, // will be set later
