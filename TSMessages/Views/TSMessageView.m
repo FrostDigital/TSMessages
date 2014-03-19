@@ -485,6 +485,8 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
         if (self.callback)
         {
             self.callback();
+        } else {
+            [self fadeMeOut];
         }
     }
 }
