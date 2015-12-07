@@ -19,7 +19,7 @@ There are 4 different types already set up for you: Success, Error, Warning, Mes
   s.requires_arc = true
 
   s.source_files = 'TSMessages/Classes/**/*.{h,m}', 'TSMessages/Views/**/*.{h,m}'
-  s.resources = ['Pod/Assets/*.png', 'Pod/Assets/*.json']
+  s.resources = "TSMessages/Resources/**/*.{png,json}"
 
   s.public_header_files = 'Pod/Classes/**/*.h'
   s.dependency 'HexColors', '~> 2.3.0'
